@@ -31,6 +31,10 @@ class ViewController: UIViewController {
             make.width.equalTo(self.view)
             make.height.equalTo(bannerView!.snp_width).multipliedBy(image1.size.height / image1.size.width * 1.00)
         })
+
+        bannerView!.bannerImageClickComplete = {(_:SwiftBannerView, _:UIImageView, _:Int) in
+            
+        }
         // Do any additional setup after loading the view, typically from a nib.
     }
 

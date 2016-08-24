@@ -13,6 +13,7 @@ import SnapKit
 
 public typealias SwiftBannerViewBannerImageComplete = (_:UIImageView, _:UIImage) -> Void
 public typealias SwiftBannerViewBannerImageUrlComplete = (_:UIImageView, _:String) -> Void
+public typealias SwiftBannerViewDidClickImageComplete = (_:SwiftBannerView, _:UIImageView, _:Int) ->Void
 
 public class SwiftBannerView: UIView,UIScrollViewDelegate {
 
@@ -20,6 +21,7 @@ public class SwiftBannerView: UIView,UIScrollViewDelegate {
     public var bannerImageComplete:SwiftBannerViewBannerImageComplete? /// 本地赋值图片自定义回掉 可以实现图片的自定义
 
     public var bannerImageUrlComplete:SwiftBannerViewBannerImageUrlComplete? /// 网络图片的自定义的回掉 可以实现自定义的图片加载方式 当是加载网络图片的话 一定需要实现
+    public var bannerImageClickComplete:SwiftBannerViewDidClickImageComplete? //点击了图片的回掉
     public var isAutoScroll:Bool = true //是否自动轮播 默认为true
 
     public var timeInterval:NSTimeInterval = 5 //自动轮播的时间间隔 默认为5秒
@@ -119,6 +121,9 @@ public class SwiftBannerView: UIView,UIScrollViewDelegate {
         var upView:UIView?;
         for i in 0..<self.imageViews.count {
             let imageView:UIImageView = self.imageViews[i]
+            imageView.userInteractionEnabled = true
+            let tap = UITapGestureRecognizer(target: self, action: #selector(SwiftBannerView.bannerImageTap(_:)))
+            imageView.addGestureRecognizer(tap)
             imageScrollContentView.addSubview(imageView)
             imageView.snp_makeConstraints(closure: { (make) in
                 make.top.bottom.equalTo(imageScrollContentView)
@@ -147,6 +152,19 @@ public class SwiftBannerView: UIView,UIScrollViewDelegate {
         }
     }
 
+    @objc private func bannerImageTap(tap:UITapGestureRecognizer) {
+        guard let imageView:UIImageView = tap.view as? UIImageView else {
+            return
+        }
+        guard let complete:SwiftBannerViewDidClickImageComplete = self.bannerImageClickComplete else {
+            return
+        }
+        guard let index = self.imageViews.indexOf(imageView) else {
+            return
+        }
+        complete(self,imageView,index)
+    }
+
     //MARK: -
 
     public override func layoutSubviews() {
@@ -161,7 +179,7 @@ public class SwiftBannerView: UIView,UIScrollViewDelegate {
      开启自动滚动
      */
     @objc private func autoScroll() {
-        print("autoScroll->>>>>>>>>>>>\(CFAbsoluteTimeGetCurrent())")
+//        print("autoScroll->>>>>>>>>>>>\(CFAbsoluteTimeGetCurrent())")
         self.bannerIndex = self.index(self.bannerIndex + 1) //获取现在需要显示的索引
         self.scroolBanner(true,page: 2) //自动滚动到对应的位置
     }
