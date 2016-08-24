@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "SwiftBannerView"
-  s.version      = "1.0.0"
+  s.version      = "1.0.1"
   s.summary      = "Swift For Banner View."
   s.description  = <<-DESC
   Can be recycled to support local Banner Swift version of the web pictures
